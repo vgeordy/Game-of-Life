@@ -1,46 +1,81 @@
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 
 public class GameGUI extends JFrame{
 
-	
-	private Cell[] cellBoard = new Cell[9];
-	
-	
-	
-	private JPanel panel = new JPanel();
+	private int size;
+	int sizeSqrt;
+	private Cell[] cellBoard;
 	
 	
-	public GameGUI() {
+	
+	
+	private JPanel boardPanel = new JPanel();
+	private JPanel buttonPanel = new JPanel();
+	private JButton start = new JButton("Step");
+	private JToggleButton run = new JToggleButton("Run");
+	
+	public GameGUI(int sz) {
 		
-	
+		
 		super("Conway's Game of Life");
-		
-		setSize(800,800);
+		setSizeBoard(sz);
+		setSize(800,1000);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		cellBoard = new Cell[this.size];
+		setLayout(new BorderLayout());
+		boardPanel.setBackground(Color.ORANGE);
+		sizeSqrt = (int)Math.sqrt(this.size);
+		boardPanel.setLayout(new GridLayout(sizeSqrt,sizeSqrt,1,1));
+		boardPanel.setPreferredSize(new Dimension(800,800));
+		buttonPanel.setPreferredSize(new Dimension(100,100));
+		initBoard();
 		
-
-		panel.setLayout(new GridLayout(3,3));
+		add(boardPanel,BorderLayout.CENTER);
+		add(buttonPanel,BorderLayout.SOUTH);
+		buttonPanel.add(start);
+		buttonPanel.add(run);
 		
-		for(int i=0;i<9;i++){
+		setVisible(true);
+		pack();
+		
+	}
+	public void setSizeBoard(int s){
+		if (Math.sqrt(s) % 1 == 0) {
+		this.size = s;
+		}else {
+			throw new IllegalArgumentException("Enter a perfect square");
+		}
+	}
+	
+	public void initBoard() {
+		for(int i=0;i<this.size;i++){
 			cellBoard[i] = new Cell();
-			panel.add(cellBoard[i]);
+			boardPanel.add(cellBoard[i]);
 
 		}
-		add(panel);
-
-		setVisible(true);
-		
 	}
+			
+	
+
+	
+			
+	
+
 	public static void main(String[] args) {
 		
-		new GameGUI();
-
+		new GameGUI(100);
+	
 	}
+	
 	
 
 	
