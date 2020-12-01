@@ -9,43 +9,36 @@ import javax.swing.JButton;
 
 public class Cell extends JButton implements ActionListener {
 
-	private int posX;
-	private int posY;
+	private int cellNum;
 	private boolean state;
 	private int count;
 
-	public Cell(int posX, int posY, boolean state) {
+	public Cell(int cellNum, boolean state) {
 		super();
-		this.setPosX(posX);
-		this.setPosY(posY);
+		this.setCellNum(cellNum);
 		this.setState(state);
 		this.addActionListener(this);
 		setBorderPainted(false);
 		setFocusPainted(false);
-		setBackground(Color.BLACK);
+		paint();
 	}
-	public Cell() {
+	
+	public Cell(int cNum) {
 		super();
+		setCellNum(cNum);
 		this.addActionListener(this);
 		setBorderPainted(false);
 		setFocusPainted(false);
 		setBackground(Color.BLACK);
 	}
-
-	public int getPosX() {
-		return posX;
+	public int getCellNum() {
+		
+		return this.cellNum;
 	}
-
-	public void setPosX(int posX) {
-		this.posX = posX;
-	}
-
-	public int getPosY() {
-		return posY;
-	}
-
-	public void setPosY(int posY) {
-		this.posY = posY;
+	
+	public void setCellNum(int cellN) {
+		this.cellNum = cellN;
+		
 	}
 
 	public boolean getState() {
@@ -67,12 +60,23 @@ public class Cell extends JButton implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		count++;
-		if (count % 2 == 0) {
-			this.setBackground(Color.BLACK);
-		}else {
+		if (count % 2 != 0) {
 			this.setBackground(Color.WHITE);
+			this.setState(true);
+		}else {
+			this.setBackground(Color.BLACK);
+			this.setState(false);
 		}
 
+	}
+	
+	public void paint() {
+		
+		if (getState() == true) {
+			setBackground(Color.WHITE);
+		}else {
+			setBackground(Color.BLACK);
+		}
 	}
 	
 	
