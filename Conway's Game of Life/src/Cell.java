@@ -11,8 +11,9 @@ public class Cell extends JButton implements ActionListener {
 
 	private int cellNum;
 	private boolean state;
-	private int count;
-
+	private boolean nextState;
+	private int count; 
+	
 	public Cell(int cellNum, boolean state) {
 		super();
 		this.setCellNum(cellNum);
@@ -47,6 +48,14 @@ public class Cell extends JButton implements ActionListener {
 
 	public void setState(boolean state) {
 		this.state = state;
+	}
+
+	public boolean getNextState() {
+		return nextState;
+	}
+
+	public void setNextState(boolean nextState) {
+		this.nextState = nextState;
 	}
 
 	public boolean isAlive() {

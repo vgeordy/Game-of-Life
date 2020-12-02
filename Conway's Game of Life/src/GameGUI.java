@@ -74,10 +74,18 @@ public class GameGUI extends JFrame{
 	}
 	
 	public  void updateBoard() {
+		JPanel newboardPanel = new JPanel();
+		newboardPanel.setBackground(Color.ORANGE);
+		newboardPanel.setLayout(new GridLayout(sizeSqrt,sizeSqrt,1,1));
+		newboardPanel.setPreferredSize(new Dimension(800,800));
+		Cell[] updatedBoard = new Cell[this.size];
 		for(int i=0;i<this.cellBoard.length;i++){
-			Cell updatedBoard = new Cell(i,cellBoard[i].getState());
-			boardPanel.add(updatedBoard);
+			updatedBoard[i] = new Cell(i,cellBoard[i].getNextState());
+			newboardPanel.add(updatedBoard[i]);
+			
 		}
+		add(newboardPanel,BorderLayout.CENTER);
+		pack();
 	}
 	
 	
@@ -102,18 +110,18 @@ public class GameGUI extends JFrame{
 			isNeighborAlive(i);
 			//1. Any live cell with fewer than two live neighbors dies, as if by underpopulation.
 			if (cellBoard[i].isAlive() && this.numOfNeighborsAlive < 2) {
-				cellBoard[i].setState(false);
+				cellBoard[i].setNextState(false);
 				
 			//Any live cell with two or three live neighbors lives on to the next generation.
 			}if (cellBoard[i].isAlive() && (this.numOfNeighborsAlive == 2 || this.numOfNeighborsAlive == 3)) {
-				cellBoard[i].setState(true);
+				cellBoard[i].setNextState(true);
 				
 			// Any live cell with more than three live neighbors dies, as if by overpopulation.
 			}if(cellBoard[i].isAlive() && this.numOfNeighborsAlive > 3) {
-				cellBoard[i].setState(false);
+				cellBoard[i].setNextState(false);
 				
 			}if(!cellBoard[i].isAlive() && this.numOfNeighborsAlive == 3 ) {
-				cellBoard[i].setState(true);
+				cellBoard[i].setNextState(true);
 				
 			}
 		
@@ -144,7 +152,7 @@ public class GameGUI extends JFrame{
 				if(cellBoard[index-this.sizeSqrt].isAlive()) {
 				this.numOfNeighborsAlive++;
 				}
-			}if (index-this.sizeSqrt+1 >=0) {
+			}if (index-this.sizeSqrt-1 >=0) {
 				if(cellBoard[index-this.sizeSqrt-1].isAlive()) {
 				this.numOfNeighborsAlive++;
 				}	
