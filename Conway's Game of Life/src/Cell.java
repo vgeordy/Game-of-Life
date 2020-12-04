@@ -88,6 +88,24 @@ public class Cell extends JButton implements ActionListener {
 		}
 	}
 	
+	public void reset() {
+		setState(false);
+		setBackground(Color.BLACK);
+	}
+
+
+/*
+	public void repaintCell() {
+		if (getNextState()== true) {
+			setBackground(Color.WHITE);
+		}else {
+			setBackground(Color.BLACK);
+		}
+	}
+
+*/
+	
+	
 	
 	
 	

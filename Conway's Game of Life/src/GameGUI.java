@@ -1,14 +1,17 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.util.concurrent.TimeUnit;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 
 public class GameGUI extends JFrame{
@@ -22,7 +25,9 @@ public class GameGUI extends JFrame{
 	
 	private JPanel boardPanel = new JPanel();
 	private JPanel buttonPanel = new JPanel();
-	private JButton start = new JButton("Start");
+	private JButton start = new JButton("Step");
+	private JButton resetButton = new JButton("reset");
+	private JButton randomize = new JButton("Randomize");
 	private JToggleButton run = new JToggleButton("Run");
 	
 	public GameGUI(int sz) {
@@ -40,23 +45,80 @@ public class GameGUI extends JFrame{
 		boardPanel.setPreferredSize(new Dimension(800,800));
 		buttonPanel.setPreferredSize(new Dimension(100,100));
 		initBoard();
+		randomizeBoard();
+		
 		start.addActionListener(new ActionListener() {
 			
 
 			public void actionPerformed(ActionEvent e) {
 					gameLogic();
+					updateBoard();
 					
 				}
+		});
+		
+		run.addChangeListener(new ChangeListener() {
+
+			
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				Thread t = new Thread(new Runnable() {
+
+					@Override
+					public void run() {
+					
+						if (run.isSelected()) {
+							run.setText("STOP");
+							while(run.isSelected()) {
+								gameLogic();
+								updateBoard();
+					}
+					
+				}else {
+					run.setText("RUN");
+				}
+						
+					}
+					
+				});
+				
+				
+			}
+
+			
+		});
+		
+		resetButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				reset();
+				
+			}
+			
+		});
+		
+		randomize.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				randomizeBoard();
+				
+			}
+			
 		});
 		add(boardPanel,BorderLayout.CENTER);
 		add(buttonPanel,BorderLayout.SOUTH);
 		buttonPanel.add(start);
 		buttonPanel.add(run);
-		
+		buttonPanel.add(resetButton);
+		buttonPanel.add(randomize);
 		setVisible(true);
 		pack();
 		
 	}
+	
 	public void setBoardSize(int s){
 		if (Math.sqrt(s) % 1 == 0) {
 		this.size = s;
@@ -72,21 +134,66 @@ public class GameGUI extends JFrame{
 
 		}
 	}
-	
-	public  void updateBoard() {
-		JPanel newboardPanel = new JPanel();
-		newboardPanel.setBackground(Color.ORANGE);
-		newboardPanel.setLayout(new GridLayout(sizeSqrt,sizeSqrt,1,1));
-		newboardPanel.setPreferredSize(new Dimension(800,800));
-		Cell[] updatedBoard = new Cell[this.size];
-		for(int i=0;i<this.cellBoard.length;i++){
-			updatedBoard[i] = new Cell(i,cellBoard[i].getNextState());
-			newboardPanel.add(updatedBoard[i]);
+	public void reset() {
+		for(int i=0;i<cellBoard.length;i++) {
+				cellBoard[i].reset();
+				
+			}
+			
 			
 		}
-		add(newboardPanel,BorderLayout.CENTER);
-		pack();
+	public void randomizeBoard() {
+		for(int i=0;i<cellBoard.length;i++) {
+			cellBoard[i].setState(Math.random() < 0.3 ? true : false);
+			cellBoard[i].paint();
+		}
 	}
+	
+
+	
+/*
+	public  void updateBoard() {
+		
+		JPanel updatedGen = new JPanel();
+		updatedGen.setBackground(Color.ORANGE);
+		updatedGen.setLayout(new GridLayout(sizeSqrt,sizeSqrt,1,1));
+		updatedGen.setPreferredSize(new Dimension(800,800));
+		Cell[] updatedCellBoard = new Cell[this.size];
+		for(int i=0;i<updatedCellBoard.length;i++){
+			updatedCellBoard[i] = new Cell(i,cellBoard[i].getNextState());
+			updatedCellBoard[i].repaint();
+			updatedGen.add(updatedCellBoard[i]);
+			
+		}
+		remove(boardPanel);
+		add(updatedGen,BorderLayout.CENTER);
+		revalidate();
+		repaint();
+		pack();
+		
+		
+	}
+
+*/
+	
+	public void updateBoard() {
+		
+		for(int i=0;i<cellBoard.length;i++){
+			boardPanel.remove(cellBoard[i]);
+			cellBoard[i] = new Cell(i,cellBoard[i].getNextState());
+			boardPanel.add(cellBoard[i]);
+			
+		}
+		
+		revalidate();
+		repaint();
+		pack();
+		
+	}
+
+	
+	
+	
 	
 	
 	public void gameLogic() {
@@ -100,35 +207,29 @@ public class GameGUI extends JFrame{
 		
 		//1
 		
-		
-/* TODO
- *  you have to set the state of the next generation, currently its setting the current state  to whatever fits the logic.
- *  
- */
-		for(int j=0;j<this.size;j++) {
-			for(int i=0;i<cellBoard.length;i++) {
-			isNeighborAlive(i);
+		for(int i=0;i<cellBoard.length;i++) {
+				isNeighborAlive(i);
 			//1. Any live cell with fewer than two live neighbors dies, as if by underpopulation.
-			if (cellBoard[i].isAlive() && this.numOfNeighborsAlive < 2) {
-				cellBoard[i].setNextState(false);
+				if (cellBoard[i].isAlive() && this.numOfNeighborsAlive < 2) {
+					cellBoard[i].setNextState(false);
 				
 			//Any live cell with two or three live neighbors lives on to the next generation.
-			}if (cellBoard[i].isAlive() && (this.numOfNeighborsAlive == 2 || this.numOfNeighborsAlive == 3)) {
-				cellBoard[i].setNextState(true);
-				
-			// Any live cell with more than three live neighbors dies, as if by overpopulation.
-			}if(cellBoard[i].isAlive() && this.numOfNeighborsAlive > 3) {
-				cellBoard[i].setNextState(false);
-				
-			}if(!cellBoard[i].isAlive() && this.numOfNeighborsAlive == 3 ) {
-				cellBoard[i].setNextState(true);
+				}if (cellBoard[i].isAlive() && (this.numOfNeighborsAlive == 2 || this.numOfNeighborsAlive == 3)) {
+					cellBoard[i].setNextState(true);
+					
+				// Any live cell with more than three live neighbors dies, as if by overpopulation.
+				}if(cellBoard[i].isAlive() && this.numOfNeighborsAlive > 3) {
+					cellBoard[i].setNextState(false);
+					
+				}if(!cellBoard[i].isAlive() && this.numOfNeighborsAlive == 3 ) {
+					cellBoard[i].setNextState(true);
 				
 			}
 		
-		}
+		
 	}
 		
-		updateBoard();
+		
 	}
 	
 	
@@ -180,13 +281,21 @@ public class GameGUI extends JFrame{
 	}
 	
 
-	
+
 			
 	
 
 	public static void main(String[] args) {
 		
-		new GameGUI(100);
+		EventQueue.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				new GameGUI(100);
+				
+			}
+			
+		});
 	
 	}
 	
