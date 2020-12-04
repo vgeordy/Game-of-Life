@@ -291,7 +291,7 @@ public class GameGUI extends JFrame{
 
 			@Override
 			public void run() {
-				new GameGUI(100);
+				new GameGUI(3600);
 				
 			}
 			
