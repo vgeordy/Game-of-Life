@@ -150,45 +150,10 @@ public class GameGUI extends JFrame{
 	}
 	
 
-	
-/*
-	public  void updateBoard() {
-		
-		JPanel updatedGen = new JPanel();
-		updatedGen.setBackground(Color.ORANGE);
-		updatedGen.setLayout(new GridLayout(sizeSqrt,sizeSqrt,1,1));
-		updatedGen.setPreferredSize(new Dimension(800,800));
-		Cell[] updatedCellBoard = new Cell[this.size];
-		for(int i=0;i<updatedCellBoard.length;i++){
-			updatedCellBoard[i] = new Cell(i,cellBoard[i].getNextState());
-			updatedCellBoard[i].repaint();
-			updatedGen.add(updatedCellBoard[i]);
-			
-		}
-		remove(boardPanel);
-		add(updatedGen,BorderLayout.CENTER);
-		revalidate();
-		repaint();
-		pack();
-		
-		
-	}
-
-*/
-	
 	public void updateBoard() {
-		
-		for(int i=0;i<cellBoard.length;i++){
-			boardPanel.remove(cellBoard[i]);
-			cellBoard[i] = new Cell(i,cellBoard[i].getNextState());
-			boardPanel.add(cellBoard[i]);
-			
+		for(int i=0;i<cellBoard.length;i++) {
+			cellBoard[i].setState(cellBoard[i].getNextState());
 		}
-		
-		revalidate();
-		repaint();
-		pack();
-		
 	}
 
 	
