@@ -262,7 +262,7 @@ public class GameGUI extends JFrame implements ActionListener {
 				while(running){
 					gameLogic();
 					updateBoard();
-					Thread.sleep(150);
+					Thread.sleep(250);
 				}
 				if (startButton.isSelected()){
 					gameLogic();

@@ -1,5 +1,4 @@
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -8,6 +7,8 @@ import javax.swing.JButton;
 
 public class Cell extends JButton implements ActionListener {
 
+	
+	
 	private int cellNum;
 	private boolean state;
 	private boolean nextState;
