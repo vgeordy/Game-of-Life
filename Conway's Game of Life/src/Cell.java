@@ -12,7 +12,7 @@ public class Cell extends JButton implements ActionListener {
 	private int cellNum;
 	private boolean state;
 	private boolean nextState;
-	private int count; 
+	private int count = 0; 
 	
 	public Cell(int cellNum, boolean state) {
 		super();
@@ -59,16 +59,25 @@ public class Cell extends JButton implements ActionListener {
 	}
 
 	public boolean isAlive() {
-		if (state) {
+		if (getState() == true) {
 			return true;
 		}
 
 		return false;
 	}
 
+	public boolean isDead(){
+		if (getState() == false){
+			return true;
+		}else {
+			return false;
+		}
+	}
+
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		count++;
+		count++;   //look into how count should be implemented.
 		if (count % 2 != 0) {
 			this.setBackground(Color.WHITE);
 			this.setState(true);
@@ -88,27 +97,10 @@ public class Cell extends JButton implements ActionListener {
 		}
 	}
 	
-	public void reset() {
+	public void resetCell() {
 		setState(false);
 		setNextState(false);
 		setBackground(Color.BLACK);
 	}
-
-
-/*
-	public void repaintCell() {
-		if (getNextState()== true) {
-			setBackground(Color.WHITE);
-		}else {
-			setBackground(Color.BLACK);
-		}
-	}
-
-*/
-	
-	
-	
-	
-	
 
 }

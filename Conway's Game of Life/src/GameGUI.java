@@ -21,7 +21,7 @@ public class GameGUI extends JFrame implements ActionListener {
 
 	private JPanel boardPanel = new JPanel();
 	private JPanel buttonPanel = new JPanel();
-	private JButton startButton = new JButton("Step");
+	private JButton stepButton = new JButton("Step");
 	private JButton resetButton = new JButton("reset");
 	private JButton randomizeButton = new JButton("Randomize");
 	private JToggleButton runButton = new JToggleButton("Run");
@@ -30,7 +30,7 @@ public class GameGUI extends JFrame implements ActionListener {
 	public GameGUI(int sz) {
 
 		super("Conway's Game of Life");
-		setBoardSize(sz);
+		this.setBoardSize(sz);
 		setSize(800, 1000);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		cellBoard = new Cell[this.size];
@@ -43,14 +43,14 @@ public class GameGUI extends JFrame implements ActionListener {
 		initBoard();
 		randomizeBoard();
 
-		startButton.addActionListener(this);
+		stepButton.addActionListener(this);
 		runButton.addActionListener(this);
 		resetButton.addActionListener(this);
 		randomizeButton.addActionListener(this);
 		add(boardPanel, BorderLayout.CENTER);
 		add(buttonPanel, BorderLayout.SOUTH);
 
-		buttonPanel.add(startButton);
+		buttonPanel.add(stepButton);
 		buttonPanel.add(runButton);
 		buttonPanel.add(resetButton);
 		buttonPanel.add(randomizeButton);
@@ -59,7 +59,7 @@ public class GameGUI extends JFrame implements ActionListener {
 
 	}
 
-	public void setBoardSize(int s) {
+	public void setBoardSize(int s) {          
 		if (Math.sqrt(s) % 1 == 0) {
 			this.size = s;
 		} else {
@@ -77,7 +77,7 @@ public class GameGUI extends JFrame implements ActionListener {
 
 	public void reset() {
 		for (int i = 0; i < cellBoard.length; i++) {
-			cellBoard[i].reset();
+			cellBoard[i].resetCell();
 
 		}
 
@@ -86,8 +86,12 @@ public class GameGUI extends JFrame implements ActionListener {
 	public void randomizeBoard() {
 		for (int i = 0; i < cellBoard.length; i++) {
 			cellBoard[i].setState(Math.random() < 0.3 ? true : false);
+			cellBoard[i].setNextState(false);
 			cellBoard[i].paint();
 		}
+		revalidate();
+		repaint();
+		pack();
 	}
 
 	public void updateBoard() {
@@ -100,31 +104,22 @@ public class GameGUI extends JFrame implements ActionListener {
 		pack();
 	}
 
-	/*
-	 * public void updateBoard() {
-	 * 
-	 * for(int i=0;i<cellBoard.length;i++){ boardPanel.remove(cellBoard[i]);
-	 * cellBoard[i] = new Cell(i,cellBoard[i].getNextState());
-	 * boardPanel.add(cellBoard[i]);
-	 * 
-	 * }
-	 * 
-	 * revalidate(); repaint(); pack();
-	 * 
-	 * }
-	 * 
-	 */
+	
 
 	public void gameLogic() {
 		/*
-		 * Rules: 1. Any live cell with fewer than two live neighbors dies, as if by
-		 * underpopulation. 2. Any live cell with two or three live neighbors lives on
-		 * to the next generation. 3. Any live cell with more than three live neighbors
-		 * dies, as if by overpopulation. 4. Any dead cell with exactly three live
+		 * Rules: 
+		 * 1. Any live cell with fewer than two live neighbors dies, as if by
+		 * underpopulation. 
+		 * 2. Any live cell with two or three live neighbors lives on
+		 * to the next generation. 
+		 * 3. Any live cell with more than three live neighbors
+		 * dies, as if by overpopulation. 
+		 * 4. Any dead cell with exactly three live
 		 * neighbors becomes a live cell, as if by reproduction.
 		 */
 
-		// 1
+		
 
 		for (int i = 0; i < cellBoard.length; i++) {
 			isNeighborAlive(i);
@@ -146,7 +141,10 @@ public class GameGUI extends JFrame implements ActionListener {
 				cellBoard[i].setNextState(false);
 
 			}
-			if (!cellBoard[i].isAlive() && this.numOfNeighborsAlive == 3) {
+			//Any dead cell with exactly three live
+		    //neighbors becomes a live cell, as if by reproduction.
+
+			if (cellBoard[i].isDead() && this.numOfNeighborsAlive == 3) {
 				cellBoard[i].setNextState(true);
 
 			}
@@ -209,25 +207,12 @@ public class GameGUI extends JFrame implements ActionListener {
 		return false;
 	}
 
-	public static void main(String[] args) {
-
-		EventQueue.invokeLater(new Runnable() {
-
-			@Override
-			public void run() {
-				new GameGUI(3600);
-
-			}
-
-		});
-
-	}
-
-	@Override
+	
+@Override
 	public void actionPerformed(ActionEvent e) {
 		Object thing = e.getSource();
 
-		if (thing == startButton) {
+		if (thing == stepButton) {
 			gameLogic();
 			updateBoard();
 		}
@@ -254,6 +239,7 @@ public class GameGUI extends JFrame implements ActionListener {
 		}
 
 	}
+
 	public void backgroundRun(){
 		SwingWorker<Void,Void> worker = new SwingWorker<Void,Void>(){
 
@@ -264,10 +250,7 @@ public class GameGUI extends JFrame implements ActionListener {
 					updateBoard();
 					Thread.sleep(250);
 				}
-				if (startButton.isSelected()){
-					gameLogic();
-					updateBoard();
-				}
+				
 
 				
 				return null;
@@ -277,6 +260,19 @@ public class GameGUI extends JFrame implements ActionListener {
 		worker.execute();
 	}
 	
+	public static void main(String[] args) {
+
+		EventQueue.invokeLater(new Runnable() {
+
+			@Override
+			public void run() {
+				new GameGUI(3600);
+
+			}
+
+		});
+
+	}
 	
 
 	
